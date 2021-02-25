@@ -44,7 +44,7 @@ when loading the Cursed City AI Companion App you are greated with a page with o
 
 ## Making Changes
 
-Adding changes to the app either by adding new quests and ore more hostiles is not that hard but as the app is designed to a single html page with both markup and client side scripting making it comlpetely independant and able to run in a browser with no internetconnection after load, it can be a little dauntig to find your way aroiund the code.
+Adding changes to the app either by adding new quests and/or more hostiles is not that hard, but as the app is designed as a single html page with both markup and client side scripting making it comlpetely independant and able to run in a browser with no internet connection after load, it can be a little dauntig to find your way around the code.
 
 This section will guide you through what you need to change or add when customising the app.
 
@@ -52,38 +52,7 @@ Before following the guides it is suggested that you visit the section with [Tec
 
 ### Adding new Quests
 
-In order to add a new quest and it's event information you need to to do ammendments at 3 different places in the file.
-
-But before you start you need to figure out what changes/ammendments you need to make if any
-
-1. Is the Quest adding any new event results not currently in the app?
-2. Is the event table different from all of the other quests currently in the app
-3. Add the quest to the apps dropdownlist of quests
-
-   1. Adding the quest and it's ID to the "Select Quest" dropdown list.
-
-      ```html
-      1. Find this section in the body section of the html
-      <h6 class="card-title text-white">Select Quest</h6>
-      <div class="input-group mb-3" style="margin-right: 5px">
-        <select class="custom-select bg-secondary text-white" name="" id="multiEventSelect">
-          <option value="EventCCC">Quest for the Necromancer (CC Core)</option>
-          <!-- <option value="EventXYZ">Quest for the XYZ (CC Core)</option> -->
-        </select>
-
-        2. Duplicate the block-commented option and remove the block-commet from the first of these lines, like this:
-        <option value="EventCCC">Quest for the big wolf (CC Core)</option>
-        <option value="EventXYZ">Quest for the XYZ (CC Core)</option>
-        <!-- <option value="EventXYZ">Quest for the XYZ (CC Core)</option> -->
-
-        3. Rename the name of the Quest followed by the box/expansion name in () between the option tags and add a unique id for it in the option tags value attribute
-        <option value="EventCCC">Quest for the big wolf (CC Core)</option>
-        <option value="EventCHT">Quest for the hidden treasure (CC Core)</option>
-        <!-- <option value="EventXYZ">Quest for the XYZ (CC Core)</option> -->
-      </div>
-      ```
-
-4.
+Info will follow after release
 
 ### Adding more Hostiles
 
@@ -95,8 +64,14 @@ Info will follow after release
 
 The app is developed as a single page app consisting of both HTML and javascript in the same file.
 
+Info will follow after release
+
 ### Script Section
 
+Info will follow after release
+
 ### Html-body section
+
+Info will follow after release
 
 **[⬆ back to top](#table-of-contents)**
