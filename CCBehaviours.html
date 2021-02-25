@@ -1,0 +1,460 @@
+<!-- Based on the BSBahaviours app by dethray79 -->
+<!-- find dethray79's github here: https://github.com/dethray79 -->
+<!-- find the original bsbehaviours app here: https://github.com/dethray79/bsbehaviours  -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Cursed City AI App</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+  </head>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"
+  ></script>
+
+  <script>
+    var modifier = 0;
+    var showHostile = 0;
+
+    // HOSTILE BEHAVIOUR RESULT OBJECTS
+    // PLEASE ADD ANY NEW BEHAVIOURS IN
+    // ALPHABETICAL ORDER
+    var advanceResult = {
+      result: 'ADVANCE',
+      descr: 'Move towards the closest explorer. Then attack the closest explorer that is in range of and visible to this hostile.',
+    };
+    var aimResult = {
+      result: 'AIM',
+      descr: 'Attack the furthest explorer that is in range of and visible to this hostile. That attack ignores cover.',
+    };
+    var chargeResult = {
+      result: 'CHARGE',
+      descr:
+        'Move towards the closest explorer. Then attack an explorer that is adjacent and visible to this hostile. If there are no explorers adjacent and visible to this hostile, move towards the closest explorer a second time.',
+    };
+    var fallbackResult = {
+      result: 'FALL BACK',
+      descr:
+        "Double this hostile's Move value when they take this action. If this hostile can make a move that ends in a hex that is not visible to any explorers, they do so. If they cannot, they attack the closest explorer that is in range and visible to this hostile.",
+    };
+    var furyResult = {
+      result: 'FURY',
+      descr: 'Take an Onslaught action. Re-roll failed attack rolls for that action.',
+    };
+    var holdResult = {
+      result: 'HOLD',
+      descr: 'Do nothing.',
+    };
+    var onslaughtResult = {
+      result: 'ONSLAUGHT',
+      descr:
+        'Attack the closest explorer that is in range of and visible to this hostile. Then attack the closest explorer that is in range of and visible to this hostile.(This may be a different target if the first explorer is taken out of action or another explorer is equally close).',
+    };
+    var rushResult = {
+      result: 'RUSH',
+      descr: 'Move towards the closest explorer. Then take a Charge action.',
+    };
+    var sneakResult = {
+      result: 'SNEAK',
+      descr: 'Make a move as close as possible to an explorer without entering a hex that is visible to any explorer.',
+    };
+
+    // QUEST EVENT KEYSETS
+    // PLEASE ADD ANY NEW KEYSETS
+    // GROUPED BY QUEST
+    var eventKeySet = [
+      //Hidden Vault EventHV
+      {
+        quest: 'EventCCC',
+        eventRoll: [1],
+        eventResultKey: 'AllIsDust1',
+      },
+      {
+        quest: 'EventCCC',
+        eventRoll: [2, 3],
+        eventResultKey: 'UnfulfilledDestiny',
+      },
+      {
+        quest: 'EventCCC',
+        eventRoll: [4, 5],
+        eventResultKey: 'NotDeadYet',
+      },
+      {
+        quest: 'EventCCC',
+        eventRoll: [6, 7],
+        eventResultKey: 'ChangingConditions',
+      },
+      {
+        quest: 'EventCCC',
+        eventRoll: [8, 9],
+        eventResultKey: 'EscapeChamber',
+      },
+      {
+        quest: 'EventCCC',
+        eventRoll: [10],
+        eventResultKey: 'Inspiration',
+      },
+      {
+        quest: 'EventCCC',
+        eventRoll: [11],
+        eventResultKey: 'HeroicEffort',
+      },
+      {
+        quest: 'EventCCC',
+        eventRoll: [12],
+        eventResultKey: 'LuckyFind',
+      },
+    ];
+
+    // QUEST EVENT RESULTS
+    // PLEASE ADD ANY NEW EVENT RESULTS
+    // IN ALPHABETICAL ORDER
+    var eventResults = [
+      {
+        eventResultKey: 'AllIsDust1',
+        descr: 'ALL IS DUST',
+        details:
+          'If any discovery markers are still on the battlefield, the leader must discard one of them. If there are no discovery markers, each explorer loses 1 inspiration point, to a minimum of 0.',
+      },
+      {
+        eventResultKey: 'ChangingConditions',
+        descr: 'CHANGING CONDITIONS',
+        details: 'Draw an encounter card. If the card has a twist, it applies for the rest of the combat. If not, there is no effect.',
+      },
+      {
+        eventResultKey: 'EscapeChamber',
+        descr: 'ESCAPE CHAMBER',
+        details:
+          'The leader replaces the portal furthest from any explorers with a maglev transport escape chamber. If more than one portal is equally far from the explorers, the leader can pick which one to replace. If this even has already been rolled, or if an explorer has used a Summon action, there is no effect.',
+      },
+      {
+        eventResultKey: 'HeroicEffort',
+        descr: 'HEROIC EFFORT',
+        details:
+          'The leader picks an explorer that is out of action. Deploy the explorer in the same hex as another explorer or as close to another explorer as possible, and then make a vitality roll for them. If no explorers are out of action, the leader picks an explorer. Make a vitality roll for that explorer.',
+      },
+      {
+        eventResultKey: 'Inspiration',
+        descr: 'INSPIRATION',
+        details: 'The leader picks an explorer. That explorer receives 1 inspiration point.',
+      },
+      { eventResultKey: 'LuckyFind', descr: 'LUCKY FIND', details: 'The leader picks an explorer. That explorer draws a discovery card.' },
+      {
+        eventResultKey: 'NotDeadYet',
+        descr: 'NOT DEAD YET',
+        details: 'The leader must pick one hostile that was slain during the combat and has not returned to the battlefield, and then deploy them as close to an explorer as possible.',
+      },
+      {
+        eventResultKey: 'UnfulfilledDestiny',
+        descr: 'UNFULFILLED DESTINY',
+        details: 'Do not make a destiny roll at the start of the next turn.',
+      },
+    ];
+
+    function generateEventResultV2(rollModifier, quest, eventResultsObject, eventDetailsObject) {
+      var rollResult = rollD12(rollModifier);
+      var eventResultKey = '';
+
+      for (var i = 0; i < eventKeySet.length; i++) {
+        var event = eventKeySet[i];
+        if (quest == event.quest) {
+          for (var x = 0; x < event.eventRoll.length; x++) {
+            if (rollResult == event.eventRoll[x]) {
+              eventResultKey = event.eventResultKey;
+              break;
+            }
+          }
+        }
+      }
+
+      for (var y = 0; y < eventResults.length; y++) {
+        var eventResult = eventResults[y];
+        if (eventResultKey == eventResult.eventResultKey) {
+          eventResultsObject.text(rollResult + ' - ' + eventResults[y].descr);
+          eventDetailsObject.text(eventResults[y].details);
+          break;
+        }
+      }
+    }
+
+    //Hostile Behavior Objects
+    //Bat Swarm
+    var batSwarmHostile = {
+      name: 'Bat Swarm',
+      id: 'CCBS',
+      size: 'SMALL',
+      hiddenResult: function (rollResult) {
+        if (rollResult < 2) return holdResult;
+        else if (rollResult > 1 && rollResult < 5) return sneakResult;
+        else if (rollResult > 4 && rollResult < 8) return advanceResult;
+        else if (rollResult > 7 && rollResult < 10) return advanceResult;
+        else if (rollResult > 9 && rollResult < 12) return chargeResult;
+        else return rushResult;
+      },
+      engagedResult: function (rollResult) {
+        if (rollResult < 2) return fallbackResult;
+        else if (rollResult > 1 && rollResult < 5) return onslaughtResult;
+        else if (rollResult > 4 && rollResult < 8) return onslaughtResult;
+        else if (rollResult > 7 && rollResult < 10) return onslaughtResult;
+        else if (rollResult > 9 && rollResult < 12) return onslaughtResult;
+        else return furyResult;
+      },
+
+      coverResult: function (rollResult) {
+        if (rollResult < 2) return aimResult;
+        else if (rollResult > 1 && rollResult < 5) return aimResult;
+        else if (rollResult > 4 && rollResult < 8) return aimResult;
+        else if (rollResult > 7 && rollResult < 10) return onslaughtResult;
+        else if (rollResult > 9 && rollResult < 12) return onslaughtResult;
+        else return furyResult;
+      },
+
+      closeResult: function (rollResult) {
+        if (rollResult < 2) return fallbackResult;
+        else if (rollResult > 1 && rollResult < 5) return onslaughtResult;
+        else if (rollResult > 4 && rollResult < 8) return onslaughtResult;
+        else if (rollResult > 7 && rollResult < 10) return chargeResult;
+        else if (rollResult > 9 && rollResult < 12) return chargeResult;
+        else return furyResult;
+      },
+
+      otherResult: function (rollResult) {
+        if (rollResult < 2) return advanceResult;
+        else if (rollResult > 1 && rollResult < 5) return advanceResult;
+        else if (rollResult > 4 && rollResult < 8) return aimResult;
+        else if (rollResult > 7 && rollResult < 10) return aimResult;
+        else if (rollResult > 9 && rollResult < 12) return onslaughtResult;
+        else return rushResult;
+      },
+    };
+
+    //Default Cursed City dice roll(D12). Takes modifier which can be a number (negative or positive)
+    function rollD12(modifier) {
+      var result = Math.floor(Math.random() * 12) + 1 + modifier;
+
+      if (result > 12) result = 12;
+      else if (result < 1) result = 1;
+
+      return result;
+    }
+
+    function hideAllHostileButtons() {
+      $('#CCBSButton').hide();
+      //$('#XYZCard').hide();
+    }
+
+    function showAllHostileButtons() {
+      $('#CCBSButton').show();
+      //$('#XYZButton').show();
+    }
+
+    function generateRollResult(modifier, hostileObject, hostileResultObject, hostileDescrObject, hostileStatus) {
+      var d20Roll = rollD12(modifier);
+      if (hostileStatus == 'ENGAGED') {
+        var rollResult = hostileObject.engagedResult(d20Roll);
+        hostileResultObject.text(d20Roll + ' - ' + rollResult.result);
+        hostileDescrObject.text(rollResult.descr);
+      }
+      if (hostileStatus == 'HIDDEN') {
+        var rollResult = hostileObject.hiddenResult(d20Roll);
+        hostileResultObject.text(d20Roll + ' - ' + rollResult.result);
+        hostileDescrObject.text(rollResult.descr);
+      }
+      if (hostileStatus == 'OTHER') {
+        var rollResult = hostileObject.otherResult(d20Roll);
+        hostileResultObject.text(d20Roll + ' - ' + rollResult.result);
+        hostileDescrObject.text(rollResult.descr);
+      }
+      if (hostileStatus == 'COVER') {
+        var rollResult = hostileObject.coverResult(d20Roll);
+        hostileResultObject.text(d20Roll + ' - ' + rollResult.result);
+        hostileDescrObject.text(rollResult.descr);
+      }
+
+      if (hostileStatus == 'CLOSE') {
+        var rollResult = hostileObject.closeResult(d20Roll);
+        hostileResultObject.text(d20Roll + ' - ' + rollResult.result);
+        hostileDescrObject.text(rollResult.descr);
+      }
+
+      if (hostileStatus == 'PROTECTIVE') {
+        var rollResult = hostileObject.protectiveResult(d20Roll);
+        hostileResultObject.text(d20Roll + ' - ' + rollResult.result);
+        hostileDescrObject.text(rollResult.descr);
+      }
+
+      if (hostileStatus == 'BODYGUARD') {
+        var rollResult = hostileObject.bodyguardResult(d20Roll);
+        hostileResultObject.text(d20Roll + ' - ' + rollResult.result);
+        hostileDescrObject.text(rollResult.descr);
+      }
+
+      if (hostileStatus == 'REINFORCEMENT') {
+        var rollResult = hostileObject.bodyguardResult(d20Roll);
+        hostileResultObject.text(d20Roll + ' - ' + rollResult.result);
+        hostileDescrObject.text(rollResult.descr);
+      }
+    }
+
+    $(document).ready(function () {
+      hideAllHostileButtons();
+
+      $('#generateHostileButton').click(function () {
+        showAllHostileButtons();
+      });
+
+      $('#multiHostileSelect').change(function () {
+        $('select > option:selected').each(function () {
+          // alert($(this).val());
+          if ($(this).val() == 'CCBS') $('#CCBSButton').show();
+          //if ($(this).val() == 'XYZ')
+          //$('#XYZButton').show();
+        });
+
+        $('select > option:not(:selected)').each(function () {
+          // alert($(this).val());
+
+          if ($(this).val() == 'CCBS') {
+            $('#CCBSButton').hide();
+            //$('#XYZButton').hide();
+          }
+        });
+      });
+
+      //BATSWARM DOC.ELEMENT FUNCTIONS
+      $('#CCBSHiddenButton').click(function () {
+        if ($('input:checked').val() == 'CCBS') {
+          generateRollResult(2, batSwarmHostile, $('#CCBSResultValue'), $('#CCBSResultDescr'), 'HIDDEN');
+        } else generateRollResult(0, batSwarmHostile, $('#CCBSResultValue'), $('#CCBSResultDescr'), 'HIDDEN');
+      });
+      $('#CCBSEngagedButton').click(function () {
+        if ($('input:checked').val() == 'CCBS') generateRollResult(2, batSwarmHostile, $('#CCBSResultValue'), $('#CCBSResultDescr'), 'ENGAGED');
+        else generateRollResult(0, batSwarmHostile, $('#CCBSResultValue'), $('#CCBSResultDescr'), 'ENGAGED');
+      });
+      $('#CCBSCoverButton').click(function () {
+        if ($('input:checked').val() == 'CCBS') generateRollResult(2, batSwarmHostile, $('#CCBSResultValue'), $('#CCBSResultDescr'), 'COVER');
+        else generateRollResult(0, batSwarmHostile, $('#CCBSResultValue'), $('#CCBSResultDescr'), 'COVER');
+      });
+      $('#CCBSCloseButton').click(function () {
+        if ($('input:checked').val() == 'CCBS') generateRollResult(2, batSwarmHostile, $('#CCBSResultValue'), $('#CCBSResultDescr'), 'CLOSE');
+        else generateRollResult(0, batSwarmHostile, $('#CCBSResultValue'), $('#CCBSResultDescr'), 'CLOSE');
+      });
+      $('#CCBSOtherButton').click(function () {
+        if ($('input:checked').val() == 'CCBS') generateRollResult(2, batSwarmHostile, $('#CCBSResultValue'), $('#CCBSResultDescr'), 'OTHER');
+        else generateRollResult(0, batSwarmHostile, $('#CCBSResultValue'), $('#CCBSResultDescr'), 'OTHER');
+      });
+      $('#CCBSCard').on('hidden.bs.collapse', function () {
+        $('#CCBSResultValue').text('');
+        $('#CCBSResultDescr').text('');
+        $('#CCBSCheckBox').prop('checked', false);
+      });
+      //END BATSWARM DOC.ELEMENT FUNCTIONS
+
+      $('#clearHostileListButon').click(function () {
+        hideAllHostileButtons();
+        $('#multiHostileSelect').val([]);
+      });
+      //On click event roll the dice and apply the result
+      $('#eventButton').click(function () {
+        generateEventResultV2(0, $('#multiEventSelect').val(), $('#eventTitleDescr'), $('#eventDetailDescr'));
+      });
+    });
+  </script>
+  <body>
+    <div class="container-fluid">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Cursed City</a>
+      </nav>
+      <div class="card bg-danger">
+        <div class="card-body">
+          <div class="form-group">
+            <h6 class="card-title text-white">Event Table</h6>
+            <div class="input-group mb-3" style="margin-right: 5px">
+              <select class="custom-select bg-secondary text-white" name="" id="multiEventSelect">
+                <option value="EventCCC">Quest for the XYZ (CC Core)</option>
+                <!-- <option value="EventHV">Quest for the XYZ (CC Core)</option> -->
+              </select>
+              <button class="btn btn-outline-light bg-dark" id="eventButton" data-toggle="modal" data-target="#eventModal">Roll Event</button>
+            </div>
+          </div>
+          <div class="form-group" id="hostileGroupSelection">
+            <h6 class="card-title text-white">Select Hostiles</h6>
+            <select multiple class="custom-select bg-secondary text-white" name="" id="multiHostileSelect">
+              <option value="CCBS">Batswarm</option>
+              <!-- <option value="XYZ">XYZ</option> -->
+            </select>
+          </div>
+          <div class="text-center">
+            <button type="button" class="btn btn-secondary" id="clearHostileListButon">Clear Selection</button>
+            <button type="button" class="btn btn-dark" id="generateHostileButton">Show All Hostiles</button>
+          </div>
+        </div>
+        <div id="hostilesButtonGroup">
+          <!-- BAT SWARM CARD-->
+          <div class="container-fluid" id="CCBSButton">
+            <button type="button" class="btn btn-dark btn-block btn-lg" id="CCBSButtonD" data-toggle="collapse" data-target="#CCBSCard">Bat Swarm</button>
+            <div class="collapse multi-collapse" id="CCBSCard">
+              <div class="card text-center">
+                <div class="card-header">
+                  <ul class="nav nav-pills card-header-pills justify-content-center">
+                    <li class="nav-item">
+                      <div class="btn-group-sm" role="group" aria-label="Basic example">
+                        <button title="No line of sight" type="button" class="btn btn-secondary" id="CCBSHiddenButton">Hidden</button>
+                        <button title="Adjacent to a visible explorer" type="button" class="btn btn-secondary" id="CCBSEngagedButton">Engaged</button>
+                        <button title="range to visible explorer within 2-3 tiles" type="button" class="btn btn-secondary" id="CCBSCoverButton">In Cover</button>
+                        <button title="Armed with xx and in cover from all visible explorers" type="button" class="btn btn-secondary" id="CCBSCloseButton">Close</button>
+                        <button title="Any other situation" type="button" class="btn btn-secondary" id="CCBSOtherButton">Other</button>
+                      </div>
+                    </li>
+                  </ul>
+                  <input type="checkbox" class="form-check-input" name="" id="CCBSCheckBox" value="CCBS" />
+                  Bat Swarm Modifier Checkbox
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title" id="CCBSResultValue">&nbsp;</h5>
+                  <p class="card-text" id="CCBSResultDescr">&nbsp;</p>
+                  <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
+                </div>
+              </div>
+            </div>
+            <br />
+          </div>
+          <!-- END BAT SWARM CARD -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Event Modal - THIS IS THE DIALOG BOX THAT SHOWS EVENT ROLL RESULT-->
+    <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="card-body bg-dark text-white">
+            <h5 class="card-title" id="eventTitleDescr">&nbsp;</h5>
+            <p class="card-text" id="eventDetailDescr">&nbsp;</p>
+            <!--<a href="#" class="btn btn-primary">Go somewhere</a>-->
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
