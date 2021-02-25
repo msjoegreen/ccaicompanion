@@ -83,7 +83,7 @@
     // PLEASE ADD ANY NEW KEYSETS
     // GROUPED BY QUEST
     var eventKeySet = [
-      //Hidden Vault EventHV
+      //Quest for the Necromancer (CoreBox) EventCCC
       {
         quest: 'EventCCC',
         eventRoll: [1],
@@ -124,6 +124,13 @@
         eventRoll: [12],
         eventResultKey: 'LuckyFind',
       },
+
+      //Quest for the XYZ (CC Core) EventXYZ
+      /* {
+        quest: 'EventXYZ',
+        eventRoll: [1,2,3,4,5,6,7,8,9,0,11,12],
+        eventResultKey: 'value of eventResultKey',
+      }, */
     ];
 
     // QUEST EVENT RESULTS
@@ -169,6 +176,12 @@
         descr: 'UNFULFILLED DESTINY',
         details: 'Do not make a destiny roll at the start of the next turn.',
       },
+      // Template EventResult
+      /* {
+        eventResultKey: 'TemplateEventResultKey',
+        descr: 'Event Reulst Key short description',
+        details: 'Event Result Key Detailed description.',
+      }, */
     ];
 
     function generateEventResultV2(rollModifier, quest, eventResultsObject, eventDetailsObject) {
@@ -392,7 +405,7 @@
             <div class="input-group mb-3" style="margin-right: 5px">
               <select class="custom-select bg-secondary text-white" name="" id="multiEventSelect">
                 <option value="EventCCC">Quest for the XYZ (CC Core)</option>
-                <!-- <option value="EventHV">Quest for the XYZ (CC Core)</option> -->
+                <!-- <option value="EventXYZ">Quest for the XYZ (CoreBox)</option> -->
               </select>
               <button class="btn btn-outline-light bg-dark" id="eventButton" data-toggle="modal" data-target="#eventModal">Roll Event</button>
             </div>

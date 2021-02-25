@@ -52,7 +52,38 @@ Before following the guides it is suggested that you visit the section with [Tec
 
 ### Adding new Quests
 
-Info will follow after release
+In order to add a new quest and it's event information you need to to do ammendments at 3 different places in the file.
+
+But before you start you need to figure out what changes/ammendments you need to make if any
+
+1. Is the Quest adding any new event results not currently in the app?
+2. Is the event table different from all of the other quests currently in the app
+3. Add the quest to the apps dropdownlist of quests
+
+   1. Adding the quest and it's ID to the "Select Quest" dropdown list.
+
+      ```html
+      1. Find this section in the body section of the html
+      <h6 class="card-title text-white">Select Quest</h6>
+      <div class="input-group mb-3" style="margin-right: 5px">
+        <select class="custom-select bg-secondary text-white" name="" id="multiEventSelect">
+          <option value="EventCCC">Quest for the Necromancer (CC Core)</option>
+          <!-- <option value="EventXYZ">Quest for the XYZ (CC Core)</option> -->
+        </select>
+
+        2. Duplicate the block-commented option and remove the block-commet from the first of these lines, like this:
+        <option value="EventCCC">Quest for the big wolf (CC Core)</option>
+        <option value="EventXYZ">Quest for the XYZ (CC Core)</option>
+        <!-- <option value="EventXYZ">Quest for the XYZ (CC Core)</option> -->
+
+        3. Rename the name of the Quest followed by the box/expansion name in () between the option tags and add a unique id for it in the option tags value attribute
+        <option value="EventCCC">Quest for the big wolf (CC Core)</option>
+        <option value="EventCHT">Quest for the hidden treasure (CC Core)</option>
+        <!-- <option value="EventXYZ">Quest for the XYZ (CC Core)</option> -->
+      </div>
+      ```
+
+4.
 
 ### Adding more Hostiles
 
