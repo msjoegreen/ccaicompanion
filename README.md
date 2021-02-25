@@ -2,6 +2,8 @@
 
 _A mostly reasonable approach to Warhammer Quest Cursed City_
 
+To run the app [Click Here!](https://msjoegreen.github.io/ccaicompanion/CCBehaviours.html):
+
 **Note**: This app assumes you own and use Warhammer Quest - Cursed City by Games Workshop. This app is a companion app and not a replacement for the game or it's rules and have never been intended as such.
 
 **Note 2**: The app is currently in a non-working state as we are yet to see the game and the rules that are required for this app to be setup properly.
@@ -29,7 +31,14 @@ you can also find the git version of the code [here](https://github.com/msjoegre
 
 ## How to Use
 
-Lorem ipsum dolor, sit amet consectetur adipisicing elit. Distinctio dolorum, earum eaque ratione sunt officia ex tenetur voluptatibus dolor inventore ipsum suscipit ullam aut assumenda corporis esse sit magnam reprehenderit est veniam. Quidem tempora perspiciatis asperiores ab consequuntur facilis deserunt vel officiis incidunt iusto necessitatibus exercitationem cum corporis provident mollitia sequi debitis quis laudantium, sed ducimus rerum ipsam recusandae error? Fugiat dolore dolores ad. Quisquam iusto ea distinctio ab aliquid, possimus, ratione quod eius nesciunt repellat dolores maiores saepe, doloremque repellendus. Nostrum facilis enim cupiditate repellendus architecto ipsa expedita minus unde! Repudiandae, commodi optio voluptatem facere nisi sequi officia consequatur sit incidunt natus facilis iste dolores a magnam consectetur et iure impedit, dolorum veritatis esse eos eligendi laudantium. Voluptas sunt praesentium veniam consequatur, reprehenderit expedita aspernatur similique non necessitatibus quos molestiae voluptatibus ex adipisci iste aperiam laudantium. Eligendi perspiciatis tenetur labore laudantium molestias ad veniam dolore. Consequatur similique nesciunt aliquam numquam officiis ipsa unde? Doloremque aliquam perspiciatis in ipsum voluptatum esse consectetur, magni vel similique dolore inventore tempora nisi at alias corrupti perferendis omnis et quae? Illum quae reiciendis aliquam earum, aspernatur omnis sit velit non at suscipit fuga ab perferendis? Sequi veritatis obcaecati voluptatem, deleniti ducimus, molestias dolores cupiditate sint magnam maxime dolorum aliquam rerum autem hic id. Dignissimos ea impedit quisquam animi cupiditate quaerat? Esse nobis repellendus dolores sunt. Similique saepe enim illum deleniti pariatur, expedita ea dolorem. Totam illum quod necessitatibus voluptates in, impedit exercitationem enim quam, eligendi libero voluptatem debitis sed corrupti quibusdam repellendus atque saepe.
+The Cursed City AI Companion App is easy to use but here is a quick rundown on how to use it anyway.
+
+when loading the Cursed City AI Companion App you are greated with a page with only a few options.
+
+1. You can select the which quest you and your friends are currently on by the selecting the quest in the "Select Quest" dropdown list.<br>
+   When the quest have been selected you can now push the "Roll Event" button to the right of you selection.<br>This will then perform a dice roll and present you with a dialog box showing you the roll result and what event that resolves to.
+
+1. You can also select which hostiles you are facing in quests current mision<br>Simply select the appropiate hostiles from the "Select Hostiles" dropdown list (you can sellect multiple hostiles by holding down the shift button while selecting)<br>
 
 **[⬆ back to top](#table-of-contents)**
 
